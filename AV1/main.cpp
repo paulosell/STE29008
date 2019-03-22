@@ -23,14 +23,14 @@ void setup1(){
 void setup2(){
 	unsigned int ubrr = (FOSC/16/BAUD)-1;
 
-		UBRR0H = (unsigned char) (ubrr >> 8);
-		UBRR0L = (unsigned char) ubrr;
+	UBRR0H = (unsigned char) (ubrr >> 8);
+	UBRR0L = (unsigned char) ubrr;
 
-		UCSR0B |= (1 << RXEN0);
-		UCSR0B |= (1 << TXEN0);
+	UCSR0B |= (1 << RXEN0);
+	UCSR0B |= (1 << TXEN0);
 
-		UCSR0C &= ~(1 << USBS0);
-		UCSR0C |= (3 << UCSZ00);
+	UCSR0C &= ~(1 << USBS0);
+	UCSR0C |= (3 << UCSZ00);
 
 }
 void controleBotao5V(){
@@ -71,19 +71,16 @@ void exec2(){
 	setup2();
 	while (true){
 
-			unsigned char byte;
-			while ( !(UCSR0A & (1<<RXC0)) )
-			;
-
+		unsigned char byte;
+		if ( (UCSR0A & (1<<RXC0)) ){
 			byte= UDR0;
 			byte = byte + 1;
 
-			while ( !( UCSR0A & (1<<UDRE0)) )
-			;
-			UDR0 = byte;
-
-
-}
+			if ( ( UCSR0A & (1<<UDRE0)) )   {
+				UDR0 = byte;
+			}
+		}
+	}
 }
 
 
