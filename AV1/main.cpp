@@ -8,6 +8,8 @@
 #include <avr/io.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
+
 #define FOSC 16000000
 #define BAUD 9600
 #define myubrr (FOSC/16/BAUD)-1
@@ -85,8 +87,9 @@ void exec3(){
 	printf("%.f", double(val));
 	char a[10] = "Digital: ";
 	char b[12] = "Analogico: ";
-
-	for (int i = 0; i < 10; i ++){
+	char digital[50];
+	char analog[50];
+	for (int i = 0; i < 9; i ++){
 
 		while ( !( UCSR0A & (1<<UDRE0)) )  ;
 		UDR0 = (uint8_t) a[i];
@@ -94,10 +97,18 @@ void exec3(){
 
 	}
 
-	while ( !( UCSR0A & (1<<UDRE0)) )  ;
-	UDR0 = (uint8_t)val + 0x30;
+	dtostrf(val,5,1, digital);
+	dtostrf(analog_val, 3,3,analog);
 
-	for (int i = 0; i < 12; i ++){
+	for (int i = 0; i < 5; i ++){
+
+				while ( !( UCSR0A & (1<<UDRE0)) )  ;
+				UDR0 = (uint8_t) digital[i];
+
+
+			}
+
+	for (int i = 0; i < 11; i ++){
 
 		while ( !( UCSR0A & (1<<UDRE0)) )  ;
 		UDR0 = (uint8_t) b[i];
@@ -105,9 +116,16 @@ void exec3(){
 
 	}
 
+	for (int i = 0; i < 4; i ++){
 
-	while ( !( UCSR0A & (1<<UDRE0)) )  ;
-	UDR0 = (uint8_t)analog_val;
+					while ( !( UCSR0A & (1<<UDRE0)) )  ;
+					UDR0 = (uint8_t) analog[i];
+
+
+
+	}
+
+
 
 
 
