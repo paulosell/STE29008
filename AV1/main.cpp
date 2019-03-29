@@ -9,10 +9,15 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <avr/interrupt.h>
+#include <time.h>
+#include <avr/delay.h>
 
 #define FOSC 16000000
 #define BAUD 9600
 #define myubrr (FOSC/16/BAUD)-1
+
+
 void setup1(){
 
 	DDRE &= ~(1 << 4); // PORT D2 AS INPUT
@@ -191,14 +196,63 @@ void exec2(){
 }
 
 
+
+void setupINT(){
+	DDRE &= ~(1 << PE4); // PORT D2 AS INPUT
+
+	DDRH |= (1 << PH6); // PORT D8 AS OUTPUT
+	UCSR0B = 0X00;
+	EICRB = (1 << ISC41);
+	EICRB = (1 << ISC40);
+	EIMSK = (1 << INT4);
+	sei();
+
+}
+void exec4(){
+	setupINT();
+	while(true){};
+
+
+}
+
+void exec5(){
+	setupINT();
+	while(true){};
+}
+
+void handler_exec4(){
+	PORTH ^= (1 << PH6);
+}
+
+void handler_exec5(){
+	while(PINE & (1 << PE4)){
+		PORTH |= (1 << PH6);
+	}
+	PORTH &= ~ (1 << PH6);
+}
+bool debounce(){
+	_delay_ms(100.0);
+	if(PINE & (1 << PE4)){
+		return true;
+	} else {
+		return false;
+	}
+
+}
+ISR(INT4_vect){
+	if(debounce()){
+	//handler_exe4();
+	handler_exec5();     // trocar handlers de acordo com o exercicio
+}
+}
 int main(){
 	//exec1();
 	//exec2();
 
 
-	exec3();
-
-
+	//exec3();
+	//exec4();
+	exec5();
 }
 
 
