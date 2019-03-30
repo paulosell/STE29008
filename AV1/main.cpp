@@ -17,7 +17,6 @@
 #define BAUD 9600
 
 
-bool led_state = false;
 void setup1(){
 
 	DDRE &= ~(1 << PE4); // PORT D2 COMO ENTRADA
