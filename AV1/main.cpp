@@ -10,14 +10,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <avr/interrupt.h>
-//#include <time.h>
-#include <avr/delay.h>
+#include <time.h>
+#include <util/delay.h>
 
 #define FOSC 16000000
 #define BAUD 9600
 
 
-
+bool led_state = false;
 void setup1(){
 
 	DDRE &= ~(1 << PE4); // PORT D2 COMO ENTRADA
@@ -50,7 +50,7 @@ void setup3(){
 
 }
 
-float read_adc(uint8_t channel){
+uint16_t read_adc(uint8_t channel){
 	ADMUX |= channel&0x07;   	// Definindo pino de entrada (A5 NO ARDUINO)
 	ADCSRB = channel&(1<<3); 	// Definindo bit MUX5 como 0
 	ADCSRA |= (1<<ADSC);      	// Inicia nova conversão
@@ -60,7 +60,7 @@ float read_adc(uint8_t channel){
 }
 
 
-int RMS (int repeat){
+float RMS (int repeat){
 
 	float accumulated = 0;
 	float average;
@@ -78,7 +78,7 @@ void exec3(){
 	setup3();
 	setup2();
 	while (true){
-		_delay_ms(2000.0);
+		_delay_ms(2000);
 		float val = RMS(300);
 		float analog_val = (val*5)/1024;
 		printf("%.f", double(val));
@@ -151,16 +151,16 @@ void setupINT(){
 	DDRE &= ~(1 << PE4);  // Pino D2 do arduino como entrada
 
 	DDRH |= (1 << PH6);   // Pino D9 do arduino como saida
-	UCSR0B = 0X00;		  // Desativando as portas seriais
 
 	EICRB = (1 << ISC41); // Definindo a interrupção externo INT4 para ser
-	EICRB = (1 << ISC40); // Acionanda na borda de subida do sinal
+	EICRB = (1 << ISC40); // Acionando na borda de subida do sinal
 	EIMSK = (1 << INT4);  // Habilitando a interrupção externa INT4
 	sei();				  // Habilitando o pino de interrupção global
 
 }
 void exec4(){
 	setupINT();
+	PORTH &= ~(1 << PH6);
 	while(true){};
 
 
@@ -168,6 +168,7 @@ void exec4(){
 
 void exec5(){
 	setupINT();
+	PORTH &= ~ (1 << PH6);
 	while(true){};
 }
 
@@ -177,13 +178,14 @@ void handler_exec4(){
 
 void handler_exec5(){
 
-	while(PINE & (1 << PE4)){
-		PORTH |= (1 << PH6);
+	while(((PINE & (1 << PE4)))){
+		PORTH &= ~ (1 << PH6);
+
 	}
-	PORTH &= ~ (1 << PH6);
+	PORTH |= (1 << PH6);
 }
 bool debounce(){
-	_delay_ms(100.0);
+	_delay_ms(100);
 	if(PINE & (1 << PE4)){
 		return true;
 	} else {
@@ -193,7 +195,7 @@ bool debounce(){
 }
 ISR(INT4_vect){
 	if(debounce()){
-		//handler_exe4();
+		//handler_exec4();
 		handler_exec5();     // trocar handlers de acordo com o exercicio
 	}
 }
@@ -204,7 +206,7 @@ int main(){
 
 	//exec3();
 	//exec4();
-	//exec5();
+	exec5();
 }
 
 
