@@ -194,8 +194,8 @@ bool debounce(){
 }
 ISR(INT4_vect){
 	if(debounce()){
-		//handler_exec4();
-		handler_exec5();     // trocar handlers de acordo com o exercicio
+		handler_exec4();
+		//handler_exec5();     // trocar handlers de acordo com o exercicio
 	}
 }
 int main(){
@@ -205,7 +205,7 @@ int main(){
 
 	//exec3();
 	//exec4();
-	exec5();
+	//exec5();
 }
 
 
