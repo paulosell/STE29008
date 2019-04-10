@@ -10,6 +10,7 @@
 
 #include "GPIO_Port.h"
 
+
 class GPIO {
 public:
 	enum PortDirection_t {
@@ -17,7 +18,7 @@ public:
 		OUTPUT = 1
 	};
 
-	GPIO(int pin, PortDirection_t dir);
+	GPIO(uint8_t id, PortDirection_t dir);
 	~GPIO();
 
 	bool get();
@@ -25,7 +26,7 @@ public:
 	void clear();
 	void toggle();
 private:
-	int _pin;
+	uint8_t _bit;
 	GPIO_PORT::GPIO_Port * _port;
 };
 
