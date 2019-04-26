@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "GPIO.h"
-#include <avr/pgmspace.h>>
+#include <avr/pgmspace.h>
 
 
 //LEDS PLACA (acende com '0')

@@ -6,11 +6,12 @@
  */
 
 #include "GPIO.h"
+#include <avr/pgmspace.h>
 
 GPIO::GPIO(uint8_t id, PortDirection_t dir)
 {
-	_bit = GPIO_PORT::id_to_bit[id];
-	_port = GPIO_PORT::AllPorts[GPIO_PORT::id_to_port[id]];
+	_bit = pgm_read_byte(&(GPIO_PORT::id_to_bit[id]));
+	_port = GPIO_PORT::AllPorts[pgm_read_byte(&(GPIO_PORT::id_to_port[id]))];
 	_port->dir(_bit, dir);
 }
 
