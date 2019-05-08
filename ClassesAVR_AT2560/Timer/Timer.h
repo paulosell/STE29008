@@ -46,8 +46,8 @@ private:
 	unsigned long long _ticks;
 	unsigned int _timer_base;
 	Microseconds _us_per_tick;
-	uint8_t _enabledTimeout;
-	Timeout timeout[4];
+	uint8_t _numberOfTimeouts;
+	static Timeout timeout[4];
 
 };
 

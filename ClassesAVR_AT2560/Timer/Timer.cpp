@@ -9,6 +9,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+Timeout Timer::timeout[4];
 Timer::Timer(Hertz freq)
 : _ticks(0), _timer_base(0), _us_per_tick(0)
 {
@@ -71,23 +72,24 @@ Timer::Timer(Hertz freq)
 	TIMSK0 = 0x01; // liga int de ov
 
 	for(uint8_t i = 0; i < 4; i++){
-		Timeout t();
+		Timeout t;
 		timeout[i] = t;
 		}
 
-	_enabledTimeout = 0;
+	_numberOfTimeouts = 0;
 }
 
 void Timer::addTimeout(uint32_t interval, CALLBACK_t callback){
-	if(_enabledTimeout < 4){
-	timeout[_enabledTimeout].config(interval, callback);
-	_enabledTimeout = _enabledTimeout + 1;
+	if(_numberOfTimeouts < 4){
+	timeout[_numberOfTimeouts].setTimeout(interval, callback);
+	_numberOfTimeouts =_numberOfTimeouts + 1;
 	}
 }
 void Timer::timeoutManager(){
 	for(uint8_t i = 0; i < 4; i++){
 			if(timeout[i].hasEvent()){
 				timeout[i].callback();
+				timeout[i].disableEvent();
 			}
 		}
 

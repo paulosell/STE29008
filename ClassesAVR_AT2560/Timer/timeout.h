@@ -7,17 +7,18 @@
 
 #ifndef TIMEOUT_H_
 #define TIMEOUT_H_
-
+#include <stdio.h>
 typedef void (*CALLBACK_t)(void);
 class Timeout{
 public:
 
 	Timeout();
-	void config(uint32_t interval, CALLBACK_t callback);
+	void setTimeout(uint32_t interval, CALLBACK_t callback);
 	void checkTimeout();
 	void callback(){(*_pCAllback)();}
 	bool isEnabled();
 	bool hasEvent();
+	void disableEvent();
 
 private:
 	bool _event;
