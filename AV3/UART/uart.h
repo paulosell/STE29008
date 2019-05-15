@@ -1,0 +1,59 @@
+/*
+ * uart.h
+ *
+ *  Created on: 12/04/2019
+ *      Author: aluno
+ */
+
+#ifndef UART_H_
+#define UART_H_
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "fila.h"
+
+class UART{
+public:
+	enum DATABITS_t{
+		DATABITS_5 = 0,
+		DATABITS_6 = 2,
+		DATABITS_7 = 4,
+		DATABITS_8 = 6
+	};
+
+	enum PARITY_t{
+		NONE = 0,
+		EVEN = 32,
+		ODD = 48
+	};
+
+	enum STOPBITS_t{
+		STOPBIT_1 = 0,
+		STOPBIT_2 = 8
+	};
+
+	UART(uint32_t baud, DATABITS_t db, PARITY_t parity, STOPBITS_t sb);
+	~UART(){};
+
+	void put(uint8_t data);
+	void puts(char data[]);
+    uint8_t get();
+    static void rxHandler();
+    static void txHandler();
+    bool hasData();
+
+private:
+    unsigned int getUBRR(uint32_t baud);
+    static bool _has_data;
+    static uint8_t quantity_rx;
+    static uint8_t quantity_tx;
+    static uint8_t _size;
+    static uint8_t _rx_buffer[10];
+    static uint8_t _tx_buffer[10];
+
+
+};
+
+
+
+#endif /* UART_H_ */
