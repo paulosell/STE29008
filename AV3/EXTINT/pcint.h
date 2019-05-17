@@ -41,17 +41,14 @@ public:
 		PCINT_22 = 22,
 		PCINT_23 = 23
 	};
-
-	PCINT(PCINT_ID_t id, CALLBACK_t callback);
+	PCINT();
 	void enable(PCINT_ID_t id);
 	void disable(PCINT_ID_t id);
 	void callback(){(*_pCallback)();}
-	static PCINT * _PCINT_vect[24];
 	void setEvent(bool event);
 	bool event();
-	void checkEvents();
+	void setCallback(CALLBACK_t callback);
 private:
-	uint8_t _id;
 	CALLBACK_t _pCallback;
 	bool _event;
 };
