@@ -12,15 +12,21 @@
 #include <avr/interrupt.h>
 #include "pcint.h"
 #include "pcintman.h"
+#include <avr/io.h>
+#include <util/delay.h>
 
 PCINT PCINTMANAGER::_PCINT_vect[24];
 
 
 PCINTMANAGER::PCINTMANAGER(){
+	PCICR = 1<<PCIE0;
+	PCICR = 1<<PCIE1;
+	PCICR = 1<<PCIE2;
 	for (int i = 0; i < 24; i++){
 		PCINT p;
 		_PCINT_vect[i] = p;
 		_PCINT_vect[i].setEvent(false);
+
 	}
 }
 
@@ -112,7 +118,7 @@ ISR(PCINT1_vect)
 	else if (PINJ & (1 << 6)){
 		PCINTMANAGER::_PCINT_vect[15].setEvent(true);
 	}
-
+	//_delay_ms(200);
 }
 
 

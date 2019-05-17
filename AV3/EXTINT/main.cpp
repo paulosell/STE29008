@@ -15,7 +15,7 @@ int main( void ){
 
 
 	PCINTMANAGER manager;
-	manager.addPCINT(PCINT::PCINT_9, handler);
+	manager.addPCINT(PCINT::PCINT_10, handler);
 	sei();
 	while(1){                                   /* forever */
 		manager.checkEvents();
