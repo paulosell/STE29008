@@ -32,24 +32,26 @@ public:
 		STOPBIT_2 = 8
 	};
 
-	UART(uint32_t baud, DATABITS_t db, PARITY_t parity, STOPBITS_t sb);
+	enum DOUBLESPEED_t{
+		OFF = 0,
+		ON = 1
+	};
+
+	UART(uint32_t baud, DATABITS_t db, PARITY_t parity, STOPBITS_t sb, DOUBLESPEED_t ds);
 	~UART(){};
 
 	void put(uint8_t data);
-	void puts(char data[]);
+	void puts(char data[], int len);
     uint8_t get();
     static void rxHandler();
     static void txHandler();
     bool hasData();
 
 private:
-    unsigned int getUBRR(uint32_t baud);
+    unsigned int getUBRR(uint32_t baud, DOUBLESPEED_t ds);
     static bool _has_data;
-    static uint8_t quantity_rx;
-    static uint8_t quantity_tx;
-    static uint8_t _size;
-    static uint8_t _rx_buffer[10];
-    static uint8_t _tx_buffer[10];
+    static Fila<uint8_t, 10> _rx;
+    static Fila<uint8_t, 10> _tx;
 
 
 };

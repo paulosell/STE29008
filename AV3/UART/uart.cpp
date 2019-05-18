@@ -11,80 +11,68 @@
 #include "uart.h"
 
 bool UART::_has_data = false;
-uint8_t UART::_size;
-uint8_t UART::quantity_tx;
-uint8_t UART::quantity_rx;
-uint8_t UART::_rx_buffer[10];
-uint8_t UART::_tx_buffer[10];
+Fila<uint8_t, 10> UART::_rx;
+Fila<uint8_t, 10> UART::_tx;
 
 
-UART::UART(uint32_t baud, DATABITS_t db, PARITY_t parity, STOPBITS_t sb){
-	UBRR0 = getUBRR(baud);
+UART::UART(uint32_t baud, DATABITS_t db, PARITY_t parity, STOPBITS_t sb, DOUBLESPEED_t ds){
+	UBRR0 = getUBRR(baud, ds);
 	UCSR0B = 24;
 	UCSR0C = db|parity|sb;
 	UCSR0B |= (1 << RXCIE0);
-	_size = 10;
-	quantity_tx = 0;
-	quantity_rx = 0;
-
-
+	if(ds == 0){
+		UCSR0A &= ~(1 << U2X0);
+	} else {
+		UCSR0A |= (1 << U2X0);
+	}
 }
 
-unsigned int UART::getUBRR(uint32_t baud){
-	return ((F_CPU/16/baud)-1);
+unsigned int UART::getUBRR(uint32_t baud, DOUBLESPEED_t ds){
+	if (ds == 0){
+		return ((F_CPU/16/baud)-1);
+	} else {
+		return ((F_CPU/8/baud)-1);
+	}
+}
+
+void UART::puts(char data[], int len){
+	for (int i = 0; i < len; i++){
+		put(data[i]);
+	}
 }
 
 void UART::put(uint8_t data){
-	if(quantity_tx < _size){
-		_tx_buffer[quantity_tx] = data;
-		quantity_tx = quantity_tx + 1;
-
+	if(!_tx.cheia()){
+		_tx.push(data);
+		UCSR0B |= (1 << UDRIE0);
 	}
-	UCSR0B |= (1 << UDRIE0);
 }
-
 uint8_t UART::get(){
-
-	uint8_t data = _rx_buffer[0];
-	quantity_rx = quantity_rx - 1;
-	if (quantity_rx > 0){
-		for(int i = 0; i < quantity_rx - 1; i++){
-			_rx_buffer[i] = _rx_buffer[i+1];
-			}
-	}
-	_has_data = (quantity_rx > 0);
+	uint8_t data = _rx.pop();
+	_has_data = !_rx.vazia();
 	return data;
 
 }
 
 void UART::rxHandler(){
-	if(quantity_rx < _size) {
-	_rx_buffer[quantity_rx] = UDR0;
-	quantity_rx = quantity_rx + 1;
-	_has_data = (quantity_rx > 0);
-}
+	if(!_rx.cheia()){
+		_rx.push(UDR0);
+		_has_data = true;
+	}
 }
 
 void UART::txHandler(){
-	if(quantity_tx > 0){
-	UDR0 = _tx_buffer[0];
-	quantity_tx = quantity_tx - 1;
-		if (quantity_tx > 1){
-			for(int i = 0; i < quantity_tx-1; i++){
-				_tx_buffer[i] = _tx_buffer[i+1];
-				}
-		} else {
-			_tx_buffer[0] = _tx_buffer[1];
+	if(!_tx.vazia()){
+		UDR0 = _tx.pop();
+		if(_tx.vazia()){
+		UCSR0B &= ~(1<<UDRIE0);
 		}
-	}
-	if (quantity_tx == 0) {
-	UCSR0B &= ~(1 << UDRIE0);
 	}
 }
 
 
 bool UART::hasData(){
-	return quantity_rx > 0;
+	return _has_data;
 }
 
 ISR(USART0_RX_vect){
@@ -94,3 +82,6 @@ ISR(USART0_RX_vect){
 ISR(USART0_UDRE_vect){
 	UART::txHandler();
 }
+
+
+
