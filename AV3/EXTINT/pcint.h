@@ -7,10 +7,7 @@
 
 #ifndef PCINT_H_
 #define PCINT_H_
-
 #include <stdio.h>
-#include "GPIO.h"
-#include <avr/interrupt.h>
 
 typedef void (*CALLBACK_t)(void);
 class PCINT{
@@ -47,10 +44,12 @@ public:
 	void callback(){(*_pCallback)();}
 	void setEvent(bool event);
 	bool event();
+	bool isEnabled();
 	void setCallback(CALLBACK_t callback);
 private:
 	CALLBACK_t _pCallback;
 	bool _event;
+	bool _enabled;
 };
 
 

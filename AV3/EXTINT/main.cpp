@@ -1,24 +1,22 @@
 #include <avr/interrupt.h>
-#include "extint.h"
 #include "GPIO.h"
-#include "pcint.h"
 #include "pcintman.h"
 
 GPIO led13(13, GPIO::OUTPUT);
-GPIO pin0(10, GPIO::INPUT);
-
+GPIO pin1(14, GPIO::INPUT);
+PCINTMANAGER manager;
 void handler(void){
-	led13.set(true);
+	led13.toggle();
+
 }
 
 int main( void ){
 
-
-	PCINTMANAGER manager;
-	manager.addPCINT(PCINT::PCINT_10, handler);
+	manager.addPCINT(PCINT::PCINT_10, &handler);
 	sei();
 	while(1){                                   /* forever */
 		manager.checkEvents();
+
 	}
 
 	return 0;

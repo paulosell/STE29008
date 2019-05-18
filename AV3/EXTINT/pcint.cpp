@@ -4,13 +4,14 @@
  *  Created on: 16 de mai de 2019
  *      Author: aluno
  */
-#include <avr/io.h>
+#include<avr/interrupt.h>
 #include "pcint.h"
-#include "GPIO.h"
+
 
 PCINT::PCINT(){
 	_pCallback = NULL;
 	_event = false;
+	_enabled = false;
 }
 
 void PCINT::enable(PCINT_ID_t id){
@@ -23,9 +24,12 @@ void PCINT::enable(PCINT_ID_t id){
 	else if (id >= 16 and id < 24){
 		PCMSK2 |= (1 << (id - 16));
 	}
+	_enabled = true;
 }
 
-
+bool PCINT::isEnabled(){
+	return _enabled;
+}
 void PCINT::disable(PCINT_ID_t id){
 	if (id < 8){
 		PCMSK0 &= ~(1 << id);
@@ -36,6 +40,7 @@ void PCINT::disable(PCINT_ID_t id){
 	else if (id >= 16 and id < 24){
 		PCMSK2 &= ~(1 << (id - 16));
 	}
+	_enabled = false;
 }
 
 void PCINT::setCallback(CALLBACK_t callback){
