@@ -12,7 +12,7 @@
 #include <util/delay.h>
 int main(){
 
-	UART serial((uint32_t) 9600, UART::DATABITS_8, UART::NONE, UART::STOPBIT_1, UART::ON);
+	UART serial((uint32_t) 9600, UART::DATABITS_8, UART::NONE, UART::STOPBIT_1, UART::ON, UART::UART0);
 	sei();
 	char data[] = "olamundo";
 	serial.puts(data, sizeof(data)-1);

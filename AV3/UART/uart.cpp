@@ -10,30 +10,21 @@
 #include <avr/interrupt.h>
 #include "uart.h"
 
+
+
+UART_MAPPER::UART_Mapper * UART::_uartptr;
 bool UART::_has_data = false;
 Fila<uint8_t, 10> UART::_rx;
 Fila<uint8_t, 10> UART::_tx;
+uint8_t UART::_id;
 
-
-UART::UART(uint32_t baud, DATABITS_t db, PARITY_t parity, STOPBITS_t sb, DOUBLESPEED_t ds){
-	UBRR0 = getUBRR(baud, ds);
-	UCSR0B = 24;
-	UCSR0C = db|parity|sb;
-	UCSR0B |= (1 << RXCIE0);
-	if(ds == 0){
-		UCSR0A &= ~(1 << U2X0);
-	} else {
-		UCSR0A |= (1 << U2X0);
-	}
+UART::UART(uint32_t baud, DATABITS_t db, PARITY_t parity, STOPBITS_t sb, DOUBLESPEED_t ds, UARTID_t id){
+	_uartptr = UART_MAPPER::AllUarts[id];
+	_uartptr->setUART((uint32_t)baud, (uint8_t) parity, (uint8_t) db, (uint8_t) sb, (uint8_t) ds);
+	_id = id;
 }
 
-unsigned int UART::getUBRR(uint32_t baud, DOUBLESPEED_t ds){
-	if (ds == 0){
-		return ((F_CPU/16/baud)-1);
-	} else {
-		return ((F_CPU/8/baud)-1);
-	}
-}
+
 
 void UART::puts(char data[], int len){
 	for (int i = 0; i < len; i++){
@@ -44,7 +35,7 @@ void UART::puts(char data[], int len){
 void UART::put(uint8_t data){
 	if(!_tx.cheia()){
 		_tx.push(data);
-		UCSR0B |= (1 << UDRIE0);
+		_uartptr->enableInt();
 	}
 }
 uint8_t UART::get(){
@@ -56,16 +47,16 @@ uint8_t UART::get(){
 
 void UART::rxHandler(){
 	if(!_rx.cheia()){
-		_rx.push(UDR0);
+		_rx.push(_uartptr->getUDR());
 		_has_data = true;
 	}
 }
 
 void UART::txHandler(){
 	if(!_tx.vazia()){
-		UDR0 = _tx.pop();
+		_uartptr->setUDR(_tx.pop());
 		if(_tx.vazia()){
-		UCSR0B &= ~(1<<UDRIE0);
+		_uartptr->disableInt();
 		}
 	}
 }
@@ -76,12 +67,39 @@ bool UART::hasData(){
 }
 
 ISR(USART0_RX_vect){
-	UART::rxHandler();
+	if (UART::_id == 0) UART::rxHandler();
 }
 
 ISR(USART0_UDRE_vect){
-	UART::txHandler();
+	if (UART::_id == 0)	UART::txHandler();
 }
+
+ISR(USART1_RX_vect){
+	if (UART::_id == 1) UART::rxHandler();
+}
+
+ISR(USART1_UDRE_vect){
+	if (UART::_id == 1)	UART::txHandler();
+}
+
+ISR(USART2_RX_vect){
+	if (UART::_id == 2) UART::rxHandler();
+}
+
+ISR(USART2_UDRE_vect){
+	if (UART::_id == 2)	UART::txHandler();
+}
+
+ISR(USART3_RX_vect){
+	if (UART::_id == 3) UART::rxHandler();
+}
+
+ISR(USART3_UDRE_vect){
+	if (UART::_id == 3)	UART::txHandler();
+}
+
+
+
 
 
 

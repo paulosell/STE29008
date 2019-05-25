@@ -8,6 +8,7 @@
 #ifndef UART_H_
 #define UART_H_
 
+#include "UART_Mapper.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "fila.h"
@@ -37,7 +38,14 @@ public:
 		ON = 1
 	};
 
-	UART(uint32_t baud, DATABITS_t db, PARITY_t parity, STOPBITS_t sb, DOUBLESPEED_t ds);
+	enum UARTID_t{
+		UART0 = 0,
+		UART1 = 1,
+		UART2 = 2,
+		UART3 = 3
+	};
+
+	UART(uint32_t baud, DATABITS_t db, PARITY_t parity, STOPBITS_t sb, DOUBLESPEED_t ds, UARTID_t id);
 	~UART(){};
 
 	void put(uint8_t data);
@@ -46,10 +54,11 @@ public:
     static void rxHandler();
     static void txHandler();
     bool hasData();
-
+    static uint8_t _id;
 private:
-    unsigned int getUBRR(uint32_t baud, DOUBLESPEED_t ds);
+    static UART_MAPPER::UART_Mapper * _uartptr;
     static bool _has_data;
+
     static Fila<uint8_t, 10> _rx;
     static Fila<uint8_t, 10> _tx;
 
