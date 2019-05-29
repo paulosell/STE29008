@@ -12,16 +12,18 @@
 
 
 
-UART_MAPPER::UART_Mapper * UART::_uartptr;
-bool UART::_has_data = false;
-Fila<uint8_t, 10> UART::_rx;
-Fila<uint8_t, 10> UART::_tx;
-uint8_t UART::_id;
+//UART_MAPPER::UART_Mapper * UART::_uartptr;
+//bool UART::_has_data = false;
+
+UART * UART:: uarts_singletons[4];
+//uint8_t UART::_id;
 
 UART::UART(uint32_t baud, DATABITS_t db, PARITY_t parity, STOPBITS_t sb, DOUBLESPEED_t ds, UARTID_t id){
 	_uartptr = UART_MAPPER::AllUarts[id];
 	_uartptr->setUART((uint32_t)baud, (uint8_t) parity, (uint8_t) db, (uint8_t) sb, (uint8_t) ds);
 	_id = id;
+	_has_data = false;
+	uarts_singletons[id] = this;
 }
 
 
@@ -45,18 +47,18 @@ uint8_t UART::get(){
 
 }
 
-void UART::rxHandler(){
-	if(!_rx.cheia()){
-		_rx.push(_uartptr->getUDR());
-		_has_data = true;
+void UART::rxHandler(uint8_t id){
+	if(!uarts_singletons[id]->_rx.cheia()){
+		uarts_singletons[id]->_rx.push(uarts_singletons[id]->_uartptr->getUDR());
+		uarts_singletons[id]->_has_data = true;
 	}
 }
 
-void UART::txHandler(){
-	if(!_tx.vazia()){
-		_uartptr->setUDR(_tx.pop());
-		if(_tx.vazia()){
-		_uartptr->disableInt();
+void UART::txHandler(uint8_t id){
+	if(!uarts_singletons[id]->_tx.vazia()){
+		uarts_singletons[id]->_uartptr->setUDR(uarts_singletons[id]->_tx.pop());
+		if(uarts_singletons[id]->_tx.vazia()){
+			uarts_singletons[id]->_uartptr->disableInt();
 		}
 	}
 }
@@ -67,35 +69,35 @@ bool UART::hasData(){
 }
 
 ISR(USART0_RX_vect){
-	if (UART::_id == 0) UART::rxHandler();
+	UART::rxHandler(0);
 }
 
 ISR(USART0_UDRE_vect){
-	if (UART::_id == 0)	UART::txHandler();
+	UART::txHandler(0);
 }
 
 ISR(USART1_RX_vect){
-	if (UART::_id == 1) UART::rxHandler();
+	UART::rxHandler(1);
 }
 
 ISR(USART1_UDRE_vect){
-	if (UART::_id == 1)	UART::txHandler();
+	UART::txHandler(1);
 }
 
 ISR(USART2_RX_vect){
-	if (UART::_id == 2) UART::rxHandler();
+	 UART::rxHandler(2);
 }
 
 ISR(USART2_UDRE_vect){
-	if (UART::_id == 2)	UART::txHandler();
+	UART::txHandler(2);
 }
 
 ISR(USART3_RX_vect){
-	if (UART::_id == 3) UART::rxHandler();
+	UART::rxHandler(3);
 }
 
 ISR(USART3_UDRE_vect){
-	if (UART::_id == 3)	UART::txHandler();
+	UART::txHandler(3);
 }
 
 

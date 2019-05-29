@@ -11,17 +11,31 @@
 #include "Timer.h"
 
 
-GPIO p13(13, GPIO::OUTPUT);
+GPIO p2(2, GPIO::OUTPUT);
+GPIO p3(3, GPIO::OUTPUT);
+GPIO p4(4, GPIO::OUTPUT);
 GPIO p5(5, GPIO::OUTPUT);
-void timeout_handler(void){
-	p13.toggle();
+void timeout2_handler(void){
+	p2.toggle();
 }
 
-void timeout2_handler(void){
+void timeout3_handler(void){
+	p3.toggle();
+}
+
+
+void timeout4_handler(void){
+	p4.toggle();
+}
+
+void timeout5_handler(void){
 	p5.toggle();
 }
-Timeout timeout(1000, &timeout_handler);
-Timeout timeout2(2000, &timeout2_handler);
+
+Timeout timeout2(1000, &timeout2_handler);
+Timeout timeout3(2000, &timeout3_handler);
+Timeout timeout4(3000, &timeout4_handler);
+Timeout timeout5(4000, &timeout5_handler);
 Timer t = Timer(1000);
 
 
@@ -29,12 +43,19 @@ Timer t = Timer(1000);
 int main(){
 
 	sei();
-
 	timeout2.enableTimeout();
-	t.addTimeout(&timeout);
+	timeout3.enableTimeout();
+	timeout4.enableTimeout();
+	timeout5.enableTimeout();
+
 	t.addTimeout(&timeout2);
-	timeout.disableTimeout();
-	timeout.enableTimeout();
+	t.addTimeout(&timeout3);
+	t.addTimeout(&timeout4);
+	t.addTimeout(&timeout5);
+
+	timeout2.disableTimeout();
+	timeout2.enableTimeout();
+
 	while(true){
 		t.timeoutManager();
 }

@@ -51,16 +51,20 @@ public:
 	void put(uint8_t data);
 	void puts(char data[], int len);
     uint8_t get();
-    static void rxHandler();
-    static void txHandler();
+    static void rxHandler(uint8_t id);
+    static void txHandler(uint8_t id);
     bool hasData();
-    static uint8_t _id;
-private:
-    static UART_MAPPER::UART_Mapper * _uartptr;
-    static bool _has_data;
+    UART_MAPPER::UART_Mapper * _uartptr;
 
-    static Fila<uint8_t, 10> _rx;
-    static Fila<uint8_t, 10> _tx;
+    bool _has_data;
+
+    Fila<uint8_t, 10> _rx;
+    Fila<uint8_t, 10> _tx;
+    uint8_t _id;
+private:
+
+    static UART * uarts_singletons[4];
+
 
 
 };
