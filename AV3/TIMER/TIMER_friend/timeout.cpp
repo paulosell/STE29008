@@ -18,17 +18,6 @@ Timeout::Timeout(uint32_t interval, CALLBACK_t callback){
 	_event = false;
 }
 
-void Timeout::setTimeout(uint32_t interval, CALLBACK_t callback){
-	_interval = interval;
-	_counter = 0;
-	_pCAllback = callback;
-	_enable = false;;
-	_event = false;
-}
-
-bool Timeout::isEnabled(){
-	return _enable;
-}
 
 void Timeout::enableTimeout(){
 	 _enable = true;
@@ -38,9 +27,6 @@ void Timeout::disableTimeout(){
 	 _enable = false;
 }
 
-bool Timeout::hasEvent(){
-	return _event;
-}
 
 void Timeout::checkTimeout(){
 	if(_counter == _interval){
@@ -54,6 +40,4 @@ void Timeout::checkTimeout(){
 
 }
 
-void Timeout::disableEvent(){
-	_event = false;
-}
+

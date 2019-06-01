@@ -14,14 +14,11 @@ class Timeout{
 public:
 	Timeout(){};
 	Timeout(uint32_t interval, CALLBACK_t callback);
-	void setTimeout(uint32_t interval, CALLBACK_t callback);
 	void checkTimeout();
 	void callback(){(*_pCAllback)();}
-	bool isEnabled();
 	void enableTimeout();
 	void disableTimeout();
-	bool hasEvent();
-	void disableEvent();
+
 
 private:
 	bool _event;
