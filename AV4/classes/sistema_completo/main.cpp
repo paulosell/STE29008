@@ -369,7 +369,7 @@ void online(){
 		while(t.varredura());
 		uint8_t tecla = t.getTecla();
 		if (tecla == 1 || tecla == 2 || tecla == 3 || tecla == 4 || tecla == 5 || tecla == 6
-				|| tecla == 7 || tecla == 8 || tecla == 9){
+				|| tecla == 7 || tecla == 8 || tecla == 9 || tecla == 0){
 			d.send_dtmf(tecla);
 		} else if (tecla == 23){
 			flag = true;

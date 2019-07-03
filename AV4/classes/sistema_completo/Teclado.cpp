@@ -120,6 +120,10 @@ uint8_t Teclado::getTecla(){
 		tecla = 23;
 	}
 
+	if (linha == 3 && coluna == 2){
+		tecla = 0;
+	}
+
 	return tecla;
 }
 
