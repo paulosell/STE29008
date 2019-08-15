@@ -7,4 +7,4 @@ Repositório para as aulas e projetos da disciplina de Sistemas Embarcados (STE2
 
 * [AV3](https://github.com/paulosell/STE29008/tree/master/AV3): Implentação de classes de auto nível para utilização dos periféricos Timer, UART e interrupções externas AVR Atmel ATmega2560 utilizando a bliblioteca AVR-libc.
 
-* [AV4](https://github.com/paulosell/STE29008/tree/master/AV4): Implementação de um sistema de testes que envia sinais DTMF centrais telefônicas tendo o AVR Atmel ATmega2560 como controlador do sistema.
+* [AV4](https://github.com/paulosell/STE29008/tree/master/AV4): Implementação de um sistema de testes que envia sinais DTMF para centrais telefônicas tendo o AVR Atmel ATmega2560 como controlador do sistema.
